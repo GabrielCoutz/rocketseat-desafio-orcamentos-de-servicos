@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { HomeHeader } from '@/components/HomeHeader';
 import { Input } from '@/components/Input';
 import { MaterialIcons } from '@expo/vector-icons';
+import { BudgetsList } from '@/components/BudgetsList';
 
 export default function Home() {
   return (
@@ -20,6 +21,8 @@ export default function Home() {
           <MaterialIcons name='filter-list' size={24} color='#6A46EB' />
         </TouchableOpacity>
       </View>
+
+      <BudgetsList />
     </View>
   );
 }
