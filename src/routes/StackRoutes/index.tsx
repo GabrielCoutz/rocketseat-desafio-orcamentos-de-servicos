@@ -1,11 +1,20 @@
+import Budget from '@/screens/Budget';
+import Filter from '@/screens/Filter';
 import Home from '@/screens/Home';
 
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
 
 type IStackRoutes = {
   home: undefined;
   budget: undefined | { id: string };
+  filter: undefined;
 };
+
+export type IStackRouteProps<T extends keyof IStackRoutes> =
+  NativeStackScreenProps<IStackRoutes, T>;
 
 const Stack = createNativeStackNavigator<IStackRoutes>();
 
@@ -18,7 +27,16 @@ export function StackRoutes() {
       }}
     >
       <Stack.Screen name='home' component={Home} />
-      {/* <Stack.Screen name='budget' component={ProfileScreen} /> */}
+      <Stack.Screen name='budget' component={Budget} />
+      <Stack.Screen
+        name='filter'
+        component={Filter}
+        options={{
+          animation: 'slide_from_bottom',
+          headerShown: false,
+          animationDuration: 100,
+        }}
+      />
     </Stack.Navigator>
   );
 }

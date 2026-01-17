@@ -5,7 +5,9 @@ import { Input } from '@/components/Input';
 import { MaterialIcons } from '@expo/vector-icons';
 import { BudgetsList } from '@/components/BudgetsList';
 
-export default function Home() {
+import { IStackRouteProps } from '@/routes/StackRoutes';
+
+export default function Home({ navigation }: IStackRouteProps<'home'>) {
   return (
     <View style={homeStyles.container}>
       <HomeHeader />
@@ -17,7 +19,11 @@ export default function Home() {
           iconPosition='left'
         />
 
-        <TouchableOpacity style={homeStyles.filterButton} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={homeStyles.filterButton}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('filter')}
+        >
           <MaterialIcons name='filter-list' size={24} color='#6A46EB' />
         </TouchableOpacity>
       </View>

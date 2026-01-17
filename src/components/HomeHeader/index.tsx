@@ -2,8 +2,11 @@ import { Button } from '@/components/Button';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 export const HomeHeader = () => {
+  const { navigate } = useNavigation();
+
   return (
     <View style={styles.header}>
       <View style={styles.texts}>
@@ -11,7 +14,7 @@ export const HomeHeader = () => {
         <Text style={styles.headerSubtitle}>Você tem 1 item em rascunho</Text>
       </View>
 
-      <Button>
+      <Button onPress={() => navigate('budget')}>
         <MaterialIcons name='add' size={24} color='#FFFFFF' />
 
         <Text style={styles.buttonText}>Novo</Text>
