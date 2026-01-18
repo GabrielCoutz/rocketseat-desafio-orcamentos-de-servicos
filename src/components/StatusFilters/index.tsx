@@ -1,5 +1,6 @@
 import { Checkbox } from '@/components/Checkbox';
-import { IBudgetStatus, StatusTag } from '@/components/StatusTag';
+import { StatusTag } from '@/components/StatusTag';
+import { IBudgetStatus } from '@/types/budget';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 

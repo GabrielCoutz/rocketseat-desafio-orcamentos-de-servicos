@@ -1,6 +1,7 @@
 import Budget from '@/screens/Budget';
 import Filter from '@/screens/Filter';
 import Home from '@/screens/Home';
+import Service from '@/screens/Service';
 
 import {
   createNativeStackNavigator,
@@ -10,6 +11,7 @@ import {
 type IStackRoutes = {
   home: undefined;
   budget: undefined | { id: string };
+  service: undefined | { id: string };
   filter: undefined;
 };
 
@@ -28,6 +30,7 @@ export function StackRoutes() {
     >
       <Stack.Screen name='home' component={Home} />
       <Stack.Screen name='budget' component={Budget} />
+      <Stack.Screen name='service' component={Service} />
       <Stack.Screen
         name='filter'
         component={Filter}

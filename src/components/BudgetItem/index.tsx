@@ -1,9 +1,25 @@
 import { StatusTag } from '@/components/StatusTag';
-import { StyleSheet, Text, View } from 'react-native';
+import { IQuoteDoc } from '@/types/budget';
+import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export const BudgetItem = () => {
+interface IBudgetItemProps {
+  item: IQuoteDoc;
+}
+
+export const BudgetItem = ({ item }: IBudgetItemProps) => {
+  const { navigate } = useNavigation();
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      activeOpacity={0.8}
+      onPress={() =>
+        navigate('budget', {
+          id: item.id,
+        })
+      }
+    >
       <View
         style={{
           flex: 1,
@@ -12,10 +28,10 @@ export const BudgetItem = () => {
         }}
       >
         <Text style={styles.title} numberOfLines={2}>
-          Desenvolvimento de aplicativo de loja online
+          {item.title || 'Sem título'}
         </Text>
         <Text style={styles.subtitle} numberOfLines={1}>
-          Soluções Tecnológicas Beta
+          {item.client || 'Cliente não informado'}
         </Text>
       </View>
 
@@ -27,13 +43,14 @@ export const BudgetItem = () => {
           height: '100%',
         }}
       >
-        <StatusTag status='pending' />
+        <StatusTag status={item.status} />
 
         <Text style={styles.price}>
-          <Text style={styles.currency}>R$</Text> 5.000,00
+          <Text style={styles.currency}>R$</Text>{' '}
+          {item?.items?.reduce((acc, curr) => acc + curr.price * curr.qty, 0)}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

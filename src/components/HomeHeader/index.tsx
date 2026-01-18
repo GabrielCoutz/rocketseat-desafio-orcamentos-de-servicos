@@ -1,20 +1,56 @@
 import { Button } from '@/components/Button';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useCallback, useState } from 'react';
 
 export const HomeHeader = () => {
+  const [pendingBudgetCount, setPendingBudgetCount] = useState(0);
   const { navigate } = useNavigation();
+  const { createBudgetInLocalStorage, getBudgetListFromLocalStorage } =
+    useLocalStorage();
+
+  const handleCreateNewBudget = async () => {
+    const createdBudget = await createBudgetInLocalStorage();
+
+    if (!createdBudget?.id)
+      return Alert.alert('Erro', 'Não foi possível criar um novo orçamento.');
+
+    navigate('budget', {
+      id: createdBudget.id,
+    });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchPendingBudgets = async () => {
+        const budgets = await getBudgetListFromLocalStorage();
+
+        const pendingBudgets =
+          budgets?.filter(budget => budget.status === 'pending') ?? [];
+
+        setPendingBudgetCount(pendingBudgets?.length);
+      };
+
+      fetchPendingBudgets();
+    }, [])
+  );
 
   return (
     <View style={styles.header}>
       <View style={styles.texts}>
         <Text style={styles.headerTitle}>Orçamentos</Text>
-        <Text style={styles.headerSubtitle}>Você tem 1 item em rascunho</Text>
+        {!!pendingBudgetCount && (
+          <Text style={styles.headerSubtitle}>
+            Você tem {pendingBudgetCount} item
+            {pendingBudgetCount > 1 ? 's' : ''} em rascunho
+          </Text>
+        )}
       </View>
 
-      <Button onPress={() => navigate('budget')}>
+      <Button onPress={handleCreateNewBudget}>
         <MaterialIcons name='add' size={24} color='#FFFFFF' />
 
         <Text style={styles.buttonText}>Novo</Text>

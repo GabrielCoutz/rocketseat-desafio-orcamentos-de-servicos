@@ -5,16 +5,12 @@ export const inputStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingLeft: 16,
-    paddingRight: 16,
-    height: 48,
+    paddingHorizontal: 16,
     borderRadius: 999,
+    height: 48,
     borderWidth: 1,
     borderColor: '#E6E5E5',
-
     backgroundColor: '#FAFAFA',
-    flex: 1,
-    overflow: 'hidden',
   },
   input: {
     fontSize: 16,

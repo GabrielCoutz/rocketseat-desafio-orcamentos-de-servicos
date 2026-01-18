@@ -1,6 +1,5 @@
+import { IBudgetStatus } from '@/types/budget';
 import { StyleSheet, Text, View } from 'react-native';
-
-export type IBudgetStatus = 'pending' | 'approved' | 'rejected' | 'sended';
 
 interface IStatusTagProps {
   status: IBudgetStatus;
