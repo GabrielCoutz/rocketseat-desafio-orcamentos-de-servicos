@@ -4,9 +4,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { StatusFilters } from '@/components/StatusFilters';
 import { OrderingFilters } from '@/components/OrderingFilters';
 import { RootStackParamList } from '@/types/navigation';
+import { Button } from '@/components/Button';
 
 export default function Filter() {
-  const { navigate } = useNavigation();
+  const { navigate, setParams } = useNavigation();
   const { params } = useRoute<RouteProp<RootStackParamList, 'filter'>>();
 
   return (
@@ -28,12 +29,62 @@ export default function Filter() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.filtersContainer}>
-        <StatusFilters />
+      <View style={{ flex: 1 }}>
+        <View style={styles.filtersContainer}>
+          <StatusFilters />
+        </View>
+
+        <View style={styles.filtersContainer}>
+          <OrderingFilters />
+        </View>
       </View>
 
-      <View style={styles.filtersContainer}>
-        <OrderingFilters />
+      <View style={styles.footer}>
+        <Button
+          style={{
+            backgroundColor: '#FAFAFA',
+            borderWidth: 1,
+            borderColor: '#E6E5E5',
+            padding: 12,
+            borderRadius: 999,
+          }}
+          onPress={() => {
+            setParams({
+              status: undefined,
+              orderBy: undefined,
+              search: undefined,
+              id: undefined,
+            });
+            navigate(
+              'home',
+              {
+                status: undefined,
+                orderBy: undefined,
+                search: undefined,
+              },
+              {
+                merge: true,
+                pop: true,
+              }
+            );
+          }}
+        >
+          <Text style={{ color: '#6A46EB' }}>Resetar filtros</Text>
+        </Button>
+
+        <Button
+          onPress={() =>
+            navigate('home', params, {
+              merge: true,
+              pop: true,
+            })
+          }
+          activeOpacity={0.8}
+        >
+          <MaterialIcons name='check' size={24} color='white' />
+
+          <Text style={{ color: 'white' }}>Aplicar</Text>
+        </Button>
       </View>
     </View>
   );
@@ -62,5 +113,14 @@ const styles = StyleSheet.create({
   },
   filtersContainer: {
     padding: 20,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    gap: 12,
+    borderTopColor: '#F0F0F0',
+    borderTopWidth: 1,
   },
 });

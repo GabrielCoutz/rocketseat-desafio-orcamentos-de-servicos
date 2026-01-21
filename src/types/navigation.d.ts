@@ -7,9 +7,9 @@ export type RootStackParamList = {
   home:
     | undefined
     | {
-        status: IBudgetStatus[];
-        search: string;
-        orderBy: IOrderingFilters;
+        status?: IBudgetStatus[];
+        search?: string;
+        orderBy?: IOrderingFilters;
       };
   budget: undefined | { id: string };
   details: { id: string };
@@ -17,9 +17,9 @@ export type RootStackParamList = {
   filter:
     | undefined
     | {
-        status: IBudgetStatus[];
-        search: string;
-        orderBy: IOrderingFilters;
+        status?: IBudgetStatus[];
+        search?: string;
+        orderBy?: IOrderingFilters;
       };
 };
 
