@@ -15,7 +15,7 @@ export const BudgetItem = ({ item }: IBudgetItemProps) => {
       style={styles.container}
       activeOpacity={0.8}
       onPress={() =>
-        navigate('budget', {
+        navigate('details', {
           id: item.id,
         })
       }

@@ -29,7 +29,7 @@ export const StatusTag = ({ status }: IStatusTagProps) => {
       />
 
       <Text style={[styles.text, { color: tagStyles.textColor }]}>
-        {statusLabelMap[status]}
+        {statusLabelMap?.[status]}
       </Text>
     </View>
   );
@@ -80,5 +80,5 @@ const getStatusTagStyles = (status: IBudgetStatus): ITagStyles => {
     },
   };
 
-  return backgroundColorByStatus[status];
+  return backgroundColorByStatus?.[status] ?? '';
 };

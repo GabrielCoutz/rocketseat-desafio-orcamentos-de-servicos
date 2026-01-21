@@ -37,6 +37,54 @@ export const useLocalStorage = () => {
       }
     };
 
+  const deleteBudgetFromLocalStorage = async (id: string): Promise<void> => {
+    try {
+      const existingBudgets = await getBudgetListFromLocalStorage();
+      if (!existingBudgets?.length) return;
+
+      const updatedBudgets = existingBudgets.filter(budget => budget.id !== id);
+
+      await AsyncStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify(updatedBudgets)
+      );
+    } catch (e) {
+      console.log('error deleting from local storage', e);
+    }
+  };
+
+  const duplicateBudgetInLocalStorage = async (
+    id: string
+  ): Promise<Partial<IQuoteDoc> | null> => {
+    try {
+      const budget = await getBudgetFromLocalStorage(id);
+      if (!budget) throw new Error('Budget not found');
+
+      const duplicatedBudget: Partial<IQuoteDoc> = {
+        ...budget,
+        id: Math.random().toString().substring(2),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      const existingBudgets = await getBudgetListFromLocalStorage();
+      const updatedBudgets = existingBudgets
+        ? [...existingBudgets, duplicatedBudget]
+        : [duplicatedBudget];
+
+      await AsyncStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify(updatedBudgets)
+      );
+
+      return duplicatedBudget;
+    } catch (e) {
+      console.log('error duplicating budget in local storage', e);
+
+      return null;
+    }
+  };
+
   const createBudgetServiceItemInLocalStorage = async (
     budgetId: string
   ): Promise<IQuoteDocItem | null> => {
@@ -235,5 +283,7 @@ export const useLocalStorage = () => {
     saveBudgetServiceItemInLocalStorage,
     deleteBudgetServiceItemFromLocalStorage,
     saveBudgetInLocalStorage,
+    deleteBudgetFromLocalStorage,
+    duplicateBudgetInLocalStorage,
   };
 };

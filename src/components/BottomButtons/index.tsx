@@ -13,24 +13,19 @@ export const BottomButtons = ({ budget }: IChangeBudgetPropsHandlers) => {
       <Button
         style={{
           backgroundColor: '#FAFAFA',
-          borderColor: '#E6E5E5',
-          borderWidth: 1,
         }}
         onPress={goBack}
       >
         <Text style={{ color: '#6A46EB' }}>Voltar</Text>
       </Button>
 
-      <Button>
-        <Text
-          style={{ color: '#ffffff' }}
-          onPress={async () => {
-            await saveBudgetInLocalStorage(budget);
-            goBack();
-          }}
-        >
-          Salvar
-        </Text>
+      <Button
+        onPress={async () => {
+          await saveBudgetInLocalStorage(budget);
+          goBack();
+        }}
+      >
+        <Text style={{ color: '#ffffff' }}>Salvar</Text>
       </Button>
     </View>
   );

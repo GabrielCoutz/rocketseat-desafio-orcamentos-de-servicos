@@ -1,4 +1,5 @@
 import Budget from '@/screens/Budget';
+import Details from '@/screens/Details';
 import Filter from '@/screens/Filter';
 import Home from '@/screens/Home';
 import Service from '@/screens/Service';
@@ -11,6 +12,7 @@ import {
 type IStackRoutes = {
   home: undefined;
   budget: undefined | { id: string };
+  details: { id: string };
   service: undefined | { id: string };
   filter: undefined;
 };
@@ -30,6 +32,7 @@ export function StackRoutes() {
     >
       <Stack.Screen name='home' component={Home} />
       <Stack.Screen name='budget' component={Budget} />
+      <Stack.Screen name='details' component={Details} />
       <Stack.Screen name='service' component={Service} />
       <Stack.Screen
         name='filter'
