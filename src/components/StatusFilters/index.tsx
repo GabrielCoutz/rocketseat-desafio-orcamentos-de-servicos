@@ -1,16 +1,35 @@
 import { Checkbox } from '@/components/Checkbox';
 import { StatusTag } from '@/components/StatusTag';
 import { IBudgetStatus } from '@/types/budget';
+import { RootStackParamList } from '@/types/navigation';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export const StatusFilters = () => {
+  const { setParams } = useNavigation();
+  const { params } = useRoute<RouteProp<RootStackParamList, 'filter'>>();
+
+  const filterFromParam = params?.status;
+
   const [filters, setFilters] = useState<Record<IBudgetStatus, boolean>>({
-    pending: false,
-    sended: false,
-    approved: false,
-    rejected: false,
+    pending: filterFromParam?.includes('pending') ?? false,
+    sended: filterFromParam?.includes('sended') ?? false,
+    approved: filterFromParam?.includes('approved') ?? false,
+    rejected: filterFromParam?.includes('rejected') ?? false,
   });
+
+  const handlePress = (status: IBudgetStatus) => {
+    setFilters(prev => ({
+      ...prev,
+      [status]: !prev[status],
+    }));
+    setParams({
+      status: filterFromParam?.includes(status)
+        ? filterFromParam.filter((s: IBudgetStatus) => s !== status)
+        : [...(filterFromParam || []), status],
+    });
+  };
 
   return (
     <View>
@@ -22,12 +41,7 @@ export const StatusFilters = () => {
             key={status}
             checked={filters[status]}
             label={<StatusTag status={status} />}
-            onPress={() =>
-              setFilters(prev => ({
-                ...prev,
-                [status]: !prev[status],
-              }))
-            }
+            onPress={() => handlePress(status)}
           />
         ))}
       </View>

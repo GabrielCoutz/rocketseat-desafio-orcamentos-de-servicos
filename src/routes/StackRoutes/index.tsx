@@ -1,20 +1,34 @@
+import { IOrderingFilters } from '@/components/OrderingFilters';
 import Budget from '@/screens/Budget';
 import Details from '@/screens/Details';
 import Filter from '@/screens/Filter';
 import Home from '@/screens/Home';
 import Service from '@/screens/Service';
+import { IBudgetStatus } from '@/types/budget';
 
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 
-type IStackRoutes = {
-  home: undefined;
+export type IStackRoutes = {
+  home:
+    | undefined
+    | {
+        status: IBudgetStatus[];
+        search: string;
+        orderBy: IOrderingFilters;
+      };
   budget: undefined | { id: string };
   details: { id: string };
   service: undefined | { id: string };
-  filter: undefined;
+  filter:
+    | undefined
+    | {
+        status: IBudgetStatus[];
+        search: string;
+        orderBy: IOrderingFilters;
+      };
 };
 
 export type IStackRouteProps<T extends keyof IStackRoutes> =

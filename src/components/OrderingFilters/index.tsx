@@ -1,4 +1,6 @@
 import { RadioButton } from '@/components/RadioButton';
+import { RootStackParamList } from '@/types/navigation';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -15,14 +17,19 @@ export const getOrderingFilterLabel = (filter: IOrderingFilters) => {
 };
 
 export const OrderingFilters = () => {
+  const { params } = useRoute<RouteProp<RootStackParamList, 'filter'>>();
+  const { setParams } = useNavigation();
   const [filters, setFilters] = useState<Record<IOrderingFilters, boolean>>({
-    newest: false,
-    oldest: false,
-    highest: false,
-    lowest: false,
+    newest: params?.orderBy === 'newest' || false,
+    oldest: params?.orderBy === 'oldest' || false,
+    highest: params?.orderBy === 'highest' || false,
+    lowest: params?.orderBy === 'lowest' || false,
   });
 
   const handleSelectFilter = (selectedFilter: IOrderingFilters) => {
+    setParams({
+      orderBy: selectedFilter,
+    });
     setFilters(prev =>
       Object.keys(prev).reduce(
         (acc, filter) => {

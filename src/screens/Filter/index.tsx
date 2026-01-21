@@ -1,11 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusFilters } from '@/components/StatusFilters';
 import { OrderingFilters } from '@/components/OrderingFilters';
+import { RootStackParamList } from '@/types/navigation';
 
 export default function Filter() {
-  const { goBack } = useNavigation();
+  const { navigate } = useNavigation();
+  const { params } = useRoute<RouteProp<RootStackParamList, 'filter'>>();
 
   return (
     <View style={styles.container}>
@@ -13,7 +15,12 @@ export default function Filter() {
         <Text style={styles.headerText}>Filtrar e ordenar</Text>
 
         <TouchableOpacity
-          onPress={goBack}
+          onPress={() =>
+            navigate('home', params, {
+              merge: true,
+              pop: true,
+            })
+          }
           activeOpacity={0.8}
           style={styles.closeButton}
         >

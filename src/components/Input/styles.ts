@@ -11,6 +11,7 @@ export const inputStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E6E5E5',
     backgroundColor: '#FAFAFA',
+    flexShrink: 1,
   },
   input: {
     fontSize: 16,
