@@ -1,22 +1,20 @@
 import { Checkbox } from '@/components/Checkbox';
 import { StatusTag } from '@/components/StatusTag';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { IBudgetStatus } from '@/types/budget';
-import { RootStackParamList } from '@/types/navigation';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export const StatusFilters = () => {
-  const { setParams } = useNavigation();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'filter'>>();
-
-  const filterFromParam = params?.status;
+  const { getBudgetFiltersFromLocalStorage, saveBudgetFiltersInLocalStorage } =
+    useLocalStorage();
 
   const [filters, setFilters] = useState<Record<IBudgetStatus, boolean>>({
-    pending: filterFromParam?.includes('pending') ?? false,
-    sended: filterFromParam?.includes('sended') ?? false,
-    approved: filterFromParam?.includes('approved') ?? false,
-    rejected: filterFromParam?.includes('rejected') ?? false,
+    pending: false,
+    sended: false,
+    approved: false,
+    rejected: false,
   });
 
   const handlePress = (status: IBudgetStatus) => {
@@ -24,12 +22,44 @@ export const StatusFilters = () => {
       ...prev,
       [status]: !prev[status],
     }));
-    setParams({
-      status: filterFromParam?.includes(status)
-        ? filterFromParam.filter((s: IBudgetStatus) => s !== status)
-        : [...(filterFromParam || []), status],
+
+    const selectedStatuses = Object.keys(filters).filter(statusKey =>
+      statusKey === status
+        ? !filters[status]
+        : filters[statusKey as IBudgetStatus]
+    ) as IBudgetStatus[];
+
+    saveBudgetFiltersInLocalStorage({
+      status: selectedStatuses,
     });
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadFilters = async () => {
+        const storedFilters = await getBudgetFiltersFromLocalStorage();
+
+        if (!storedFilters?.status) return;
+
+        const statusFiltersArray = storedFilters.status;
+
+        const statusFiltersRecord = (
+          Object.keys(filters) as IBudgetStatus[]
+        ).reduce(
+          (acc, status) => {
+            acc[status] = statusFiltersArray.includes(status);
+
+            return acc;
+          },
+          {} as Record<IBudgetStatus, boolean>
+        );
+
+        setFilters(statusFiltersRecord);
+      };
+
+      loadFilters();
+    }, [])
+  );
 
   return (
     <View>

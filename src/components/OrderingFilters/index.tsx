@@ -1,7 +1,8 @@
 import { RadioButton } from '@/components/RadioButton';
-import { RootStackParamList } from '@/types/navigation';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { useState } from 'react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export type IOrderingFilters = 'newest' | 'oldest' | 'highest' | 'lowest';
@@ -17,19 +18,17 @@ export const getOrderingFilterLabel = (filter: IOrderingFilters) => {
 };
 
 export const OrderingFilters = () => {
-  const { params } = useRoute<RouteProp<RootStackParamList, 'filter'>>();
-  const { setParams } = useNavigation();
+  const { getBudgetFiltersFromLocalStorage, saveBudgetFiltersInLocalStorage } =
+    useLocalStorage();
+
   const [filters, setFilters] = useState<Record<IOrderingFilters, boolean>>({
-    newest: params?.orderBy === 'newest' || false,
-    oldest: params?.orderBy === 'oldest' || false,
-    highest: params?.orderBy === 'highest' || false,
-    lowest: params?.orderBy === 'lowest' || false,
+    newest: false,
+    oldest: false,
+    highest: false,
+    lowest: false,
   });
 
   const handleSelectFilter = (selectedFilter: IOrderingFilters) => {
-    setParams({
-      orderBy: selectedFilter,
-    });
     setFilters(prev =>
       Object.keys(prev).reduce(
         (acc, filter) => {
@@ -40,7 +39,38 @@ export const OrderingFilters = () => {
         {} as Record<IOrderingFilters, boolean>
       )
     );
+
+    saveBudgetFiltersInLocalStorage({
+      orderBy: selectedFilter,
+    });
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadFilters = async () => {
+        const storedFilters = await getBudgetFiltersFromLocalStorage();
+
+        if (!storedFilters?.orderBy) return;
+
+        const orderingFilter = storedFilters.orderBy;
+
+        const orderingFiltersRecord = (
+          Object.keys(filters) as IOrderingFilters[]
+        ).reduce(
+          (acc, order) => {
+            acc[order] = order === orderingFilter;
+
+            return acc;
+          },
+          {} as Record<IOrderingFilters, boolean>
+        );
+
+        setFilters(orderingFiltersRecord);
+      };
+
+      loadFilters();
+    }, [])
+  );
 
   return (
     <View>

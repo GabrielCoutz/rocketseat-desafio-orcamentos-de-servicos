@@ -2,15 +2,17 @@ import { BudgetItem } from '@/components/BudgetItem';
 import { IOrderingFilters } from '@/components/OrderingFilters';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { IBudgetStatus, IQuoteDoc } from '@/types/budget';
-import { RootStackParamList } from '@/types/navigation';
-import { RouteProp, useFocusEffect, useRoute } from '@react-navigation/native';
+import { IFilters } from '@/types/filters';
+
+import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Alert, FlatList, Text, View } from 'react-native';
 
 export const BudgetsList = () => {
   const [budgetList, setBudgetList] = useState<IQuoteDoc[]>([]);
-  const { getBudgetListFromLocalStorage } = useLocalStorage();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'home'>>();
+  const { getBudgetListFromLocalStorage, getBudgetFiltersFromLocalStorage } =
+    useLocalStorage();
+  const [filters, setFilters] = useState<IFilters | null>({});
 
   const filterBudgetsBySearch = (
     search: string,
@@ -23,13 +25,13 @@ export const BudgetsList = () => {
     );
 
   const filterBudgetsByStatus = (
-    status: IBudgetStatus[],
+    status: IBudgetStatus[] | undefined,
     list: IQuoteDoc[]
   ): IQuoteDoc[] =>
-    list.filter(budget => status.find(s => s === budget.status));
+    list.filter(budget => status?.find(s => s === budget.status));
 
   const filterBudgetsByOrder = (
-    orderBy: IOrderingFilters,
+    orderBy: IOrderingFilters | undefined,
     list: IQuoteDoc[]
   ): IQuoteDoc[] => {
     const sortFunctionsMap: Record<
@@ -41,8 +43,8 @@ export const BudgetsList = () => {
       oldest: (a: IQuoteDoc, b: IQuoteDoc) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
       highest: (a: IQuoteDoc, b: IQuoteDoc) =>
-        a.items.reduce((sum, item) => sum + item.price * item.qty, 0) -
-        b.items.reduce((sum, item) => sum + item.price * item.qty, 0),
+        b.items.reduce((sum, item) => sum + item.price * item.qty, 0) -
+        a.items.reduce((sum, item) => sum + item.price * item.qty, 0),
       lowest: (a: IQuoteDoc, b: IQuoteDoc) =>
         a.items.reduce((sum, item) => sum + item.price * item.qty, 0) -
         b.items.reduce((sum, item) => sum + item.price * item.qty, 0),
@@ -52,6 +54,20 @@ export const BudgetsList = () => {
       ? list.sort(sortFunctionsMap[orderBy as keyof typeof sortFunctionsMap])
       : list;
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const loadFilters = async () => {
+        const storedFilters = await getBudgetFiltersFromLocalStorage();
+
+        if (!storedFilters) return;
+
+        setFilters(storedFilters);
+      };
+
+      loadFilters();
+    }, [])
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -65,23 +81,23 @@ export const BudgetsList = () => {
           );
 
         const shouldFilterBySearch =
-          params?.search && params?.search?.length > 0;
+          filters?.search && filters?.search?.length > 0;
         if (shouldFilterBySearch)
-          budgets = filterBudgetsBySearch(params.search || '', budgets);
+          budgets = filterBudgetsBySearch(filters.search || '', budgets);
 
-        const shouldFilterByStatus = params?.status?.length;
+        const shouldFilterByStatus = !!filters?.status;
         if (shouldFilterByStatus)
-          budgets = filterBudgetsByStatus(params.status, budgets);
+          budgets = filterBudgetsByStatus(filters?.status, budgets);
 
-        const shouldOrderBy = !!params?.orderBy;
+        const shouldOrderBy = !!filters?.orderBy;
         if (shouldOrderBy)
-          budgets = filterBudgetsByOrder(params.orderBy, budgets);
+          budgets = filterBudgetsByOrder(filters?.orderBy, budgets);
 
         setBudgetList(budgets);
       };
 
       fetchBudgets();
-    }, [params])
+    }, [filters])
   );
 
   return (
@@ -99,7 +115,7 @@ export const BudgetsList = () => {
       ListEmptyComponent={() => (
         <View style={{ flex: 1 }}>
           <Text style={{ textAlign: 'center', color: 'gray' }}>
-            {params?.search
+            {filters?.search
               ? 'Nenhum orçamento encontrado para essa busca.'
               : 'Nenhum orçamento disponível.'}
           </Text>

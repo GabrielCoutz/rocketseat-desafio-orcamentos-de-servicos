@@ -1,14 +1,14 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { StatusFilters } from '@/components/StatusFilters';
 import { OrderingFilters } from '@/components/OrderingFilters';
-import { RootStackParamList } from '@/types/navigation';
 import { Button } from '@/components/Button';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export default function Filter() {
-  const { navigate, setParams } = useNavigation();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'filter'>>();
+  const { navigate } = useNavigation();
+  const { resetBudgetFiltersInLocalStorage } = useLocalStorage();
 
   return (
     <View style={styles.container}>
@@ -16,12 +16,7 @@ export default function Filter() {
         <Text style={styles.headerText}>Filtrar e ordenar</Text>
 
         <TouchableOpacity
-          onPress={() =>
-            navigate('home', params, {
-              merge: true,
-              pop: true,
-            })
-          }
+          onPress={() => navigate('home', undefined, { pop: true })}
           activeOpacity={0.8}
           style={styles.closeButton}
         >
@@ -48,39 +43,16 @@ export default function Filter() {
             padding: 12,
             borderRadius: 999,
           }}
-          onPress={() => {
-            setParams({
-              status: undefined,
-              orderBy: undefined,
-              search: undefined,
-              id: undefined,
-            });
-            navigate(
-              'home',
-              {
-                status: undefined,
-                orderBy: undefined,
-                search: undefined,
-              },
-              {
-                merge: true,
-                pop: true,
-              }
-            );
+          onPress={async () => {
+            await resetBudgetFiltersInLocalStorage();
+
+            navigate('home', undefined, { pop: true });
           }}
         >
           <Text style={{ color: '#6A46EB' }}>Resetar filtros</Text>
         </Button>
 
-        <Button
-          onPress={() =>
-            navigate('home', params, {
-              merge: true,
-              pop: true,
-            })
-          }
-          activeOpacity={0.8}
-        >
+        <Button onPress={() => navigate('home')} activeOpacity={0.8}>
           <MaterialIcons name='check' size={24} color='white' />
 
           <Text style={{ color: 'white' }}>Aplicar</Text>

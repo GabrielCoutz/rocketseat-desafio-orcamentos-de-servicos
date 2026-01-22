@@ -6,13 +6,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { BudgetsList } from '@/components/BudgetsList';
 
 import { IStackRouteProps } from '@/routes/StackRoutes';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '@/types/navigation';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export default function Home({ navigation }: IStackRouteProps<'home'>) {
-  const { setParams } = useNavigation();
-  const { params } = useRoute<RouteProp<RootStackParamList, 'home'>>();
-
+  const { saveBudgetFiltersInLocalStorage } = useLocalStorage();
   return (
     <View style={homeStyles.container}>
       <HomeHeader />
@@ -22,17 +19,15 @@ export default function Home({ navigation }: IStackRouteProps<'home'>) {
           placeholder='Título ou cliente'
           icon={<MaterialIcons name='search' size={24} color='#4A4A4A' />}
           iconPosition='left'
-          onChangeText={value =>
-            setParams({
-              search: value,
-            })
+          onChangeText={async value =>
+            await saveBudgetFiltersInLocalStorage({ search: value })
           }
         />
 
         <TouchableOpacity
           style={homeStyles.filterButton}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate('filter', params)}
+          onPress={() => navigation.navigate('filter')}
         >
           <MaterialIcons name='filter-list' size={24} color='#6A46EB' />
         </TouchableOpacity>

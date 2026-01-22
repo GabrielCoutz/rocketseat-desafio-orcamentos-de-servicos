@@ -1,7 +1,9 @@
 import { IQuoteDoc, IQuoteDocItem } from '@/types/budget';
+import { IFilters } from '@/types/filters';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LOCAL_STORAGE_KEY = '@orcamentos_lista' as const;
+const LOCAL_STORAGE_FILTERS_KEY = '@orcamentos_filtros' as const;
 
 export const useLocalStorage = () => {
   const createBudgetInLocalStorage =
@@ -272,6 +274,46 @@ export const useLocalStorage = () => {
     }
   };
 
+  const getBudgetFiltersFromLocalStorage =
+    async (): Promise<IFilters | null> => {
+      try {
+        const jsonValue = await AsyncStorage.getItem(LOCAL_STORAGE_FILTERS_KEY);
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+      } catch (e) {
+        console.log('error reading filters from local storage', e);
+
+        return null;
+      }
+    };
+
+  const saveBudgetFiltersInLocalStorage = async (
+    filters: IFilters
+  ): Promise<void> => {
+    try {
+      const filtersAlreadyInStorage = await getBudgetFiltersFromLocalStorage();
+
+      const updatedFilters = {
+        ...filtersAlreadyInStorage,
+        ...filters,
+      };
+
+      await AsyncStorage.setItem(
+        LOCAL_STORAGE_FILTERS_KEY,
+        JSON.stringify(updatedFilters)
+      );
+    } catch (e) {
+      console.log('error saving filters to local storage', e);
+    }
+  };
+
+  const resetBudgetFiltersInLocalStorage = async (): Promise<void> => {
+    try {
+      await AsyncStorage.removeItem(LOCAL_STORAGE_FILTERS_KEY);
+    } catch (e) {
+      console.log('error resetting filters in local storage', e);
+    }
+  };
+
   return {
     createBudgetInLocalStorage,
     addBudgetInLocalStorage,
@@ -285,5 +327,9 @@ export const useLocalStorage = () => {
     saveBudgetInLocalStorage,
     deleteBudgetFromLocalStorage,
     duplicateBudgetInLocalStorage,
+
+    getBudgetFiltersFromLocalStorage,
+    saveBudgetFiltersInLocalStorage,
+    resetBudgetFiltersInLocalStorage,
   };
 };
