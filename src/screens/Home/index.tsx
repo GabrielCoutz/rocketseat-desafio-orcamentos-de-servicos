@@ -7,9 +7,12 @@ import { BudgetsList } from '@/components/BudgetsList';
 
 import { IStackRouteProps } from '@/routes/StackRoutes';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useState } from 'react';
 
 export default function Home({ navigation }: IStackRouteProps<'home'>) {
+  const [search, setSearch] = useState('');
   const { saveBudgetFiltersInLocalStorage } = useLocalStorage();
+
   return (
     <View style={homeStyles.container}>
       <HomeHeader />
@@ -19,9 +22,10 @@ export default function Home({ navigation }: IStackRouteProps<'home'>) {
           placeholder='Título ou cliente'
           icon={<MaterialIcons name='search' size={24} color='#4A4A4A' />}
           iconPosition='left'
-          onChangeText={async value =>
-            await saveBudgetFiltersInLocalStorage({ search: value })
-          }
+          onChangeText={async value => {
+            await saveBudgetFiltersInLocalStorage({ search: value });
+            setSearch(value);
+          }}
         />
 
         <TouchableOpacity
@@ -33,7 +37,7 @@ export default function Home({ navigation }: IStackRouteProps<'home'>) {
         </TouchableOpacity>
       </View>
 
-      <BudgetsList />
+      <BudgetsList search={search} />
     </View>
   );
 }

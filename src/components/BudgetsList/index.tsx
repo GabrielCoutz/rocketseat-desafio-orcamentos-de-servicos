@@ -8,7 +8,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { Alert, FlatList, Text, View } from 'react-native';
 
-export const BudgetsList = () => {
+interface IBudgetsListProps {
+  search: string;
+}
+
+export const BudgetsList = ({ search }: IBudgetsListProps) => {
   const [budgetList, setBudgetList] = useState<IQuoteDoc[]>([]);
   const { getBudgetListFromLocalStorage, getBudgetFiltersFromLocalStorage } =
     useLocalStorage();
@@ -66,7 +70,7 @@ export const BudgetsList = () => {
       };
 
       loadFilters();
-    }, [])
+    }, [search])
   );
 
   useFocusEffect(
@@ -97,7 +101,7 @@ export const BudgetsList = () => {
       };
 
       fetchBudgets();
-    }, [filters])
+    }, [filters, search])
   );
 
   return (
