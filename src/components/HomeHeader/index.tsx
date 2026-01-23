@@ -44,8 +44,8 @@ export const HomeHeader = () => {
         <Text style={styles.headerTitle}>Orçamentos</Text>
         {!!pendingBudgetCount && (
           <Text style={styles.headerSubtitle}>
-            Você tem {pendingBudgetCount} item
-            {pendingBudgetCount > 1 ? 's' : ''} em rascunho
+            Você tem {pendingBudgetCount} ite
+            {pendingBudgetCount > 1 ? 'ns' : 'm'} em rascunho
           </Text>
         )}
       </View>
